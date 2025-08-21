@@ -86,6 +86,3 @@ spec:
           memory: 16Gi
           nvidia.com/gpu: '3'
       runtime: poro
-      storage:
-        key: poro
-        path: /
