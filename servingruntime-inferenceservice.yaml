@@ -21,7 +21,7 @@ spec:
         - '--port=8080'
         - '--model=/poro'
         - '--served-model-name={{.Name}}'
-        - '--tensor-parallel-size=3'
+        - '--tensor-parallel-size=2'
       command:
         - python
         - '-m'
@@ -85,9 +85,9 @@ spec:
         limits:
           cpu: '4'
           memory: 20Gi
-          nvidia.com/gpu: '3'
+          nvidia.com/gpu: '2'
         requests:
           cpu: '2'
           memory: 16Gi
-          nvidia.com/gpu: '3'
+          nvidia.com/gpu: '2'
       runtime: poro
