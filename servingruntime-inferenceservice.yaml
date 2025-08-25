@@ -91,3 +91,20 @@ spec:
           memory: 16Gi
           nvidia.com/gpu: '2'
       runtime: poro
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: poro
+  namespace: poro
+spec:
+  host: poro-poro.apps.aic.eu.arrow.lab
+  path: /
+  to:
+    name: poro-predictor
+    weight: 100
+    kind: Service
+  port:
+    targetPort: http
+  wildcardPolicy: None
+  alternateBackends: []
