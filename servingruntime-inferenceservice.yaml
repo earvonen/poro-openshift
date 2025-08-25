@@ -21,6 +21,7 @@ spec:
         - '--port=8080'
         - '--model=/poro'
         - '--served-model-name={{.Name}}'
+        - '--tensor-parallel-size=3'
       command:
         - python
         - '-m'
