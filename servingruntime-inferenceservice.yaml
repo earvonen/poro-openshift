@@ -39,6 +39,8 @@ spec:
           name: shm
         - mountPath: /poro
           name: poro-model
+        - name: vllm-cache
+          mountPath: /home/vllm/.cache
   multiModel: false
   supportedModelFormats:
     - autoSelect: true
@@ -52,6 +54,8 @@ spec:
         claimName: poro-model
         readOnly: false
       name: poro-model
+    - name: vllm-cache
+      emptyDir: {}
 ---
 apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
