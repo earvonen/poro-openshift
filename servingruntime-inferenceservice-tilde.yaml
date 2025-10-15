@@ -9,7 +9,7 @@ metadata:
     opendatahub.io/template-name: vllm-runtime
     openshift.io/display-name: tilde
   name: tilde
-  namespace: tilde
+  namespace: tilde-eero
   labels:
     opendatahub.io/dashboard: 'true'
 spec:
@@ -67,7 +67,7 @@ metadata:
     sidecar.istio.io/inject: 'true'
     sidecar.istio.io/rewriteAppHTTPProbers: 'true'
   name: tilde
-  namespace: tilde
+  namespace: tilde-eero
   finalizers:
     - inferenceservice.finalizers
   labels:
@@ -96,7 +96,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: tilde
-  namespace: tilde
+  namespace: tilde-eero
 spec:
   host: tilde-tilde.apps.aic.eu.arrow.lab
   path: /
