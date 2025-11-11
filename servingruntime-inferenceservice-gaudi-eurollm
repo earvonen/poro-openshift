@@ -1,0 +1,110 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: ServingRuntime
+metadata:
+  annotations:
+    opendatahub.io/accelerator-name:
+    opendatahub.io/apiProtocol: REST
+    opendatahub.io/recommended-accelerators: '["habana.ai/gaudi"]'
+    opendatahub.io/template-display-name: vLLM ServingRuntime for KServe
+    opendatahub.io/template-name: vllm-runtime
+    openshift.io/display-name: eurollm
+  name: eurollm
+  namespace: eurollm-eero
+  labels:
+    opendatahub.io/dashboard: 'true'
+spec:
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: '8080'
+  containers:
+    - args:
+        - '--port=8080'
+        - '--model=/eurollm'
+        - '--served-model-name={{.Name}}'
+        - '--tensor-parallel-size=1'
+      command:
+        - python
+        - '-m'
+        - vllm.entrypoints.openai.api_server
+      env:
+        - name: HF_HOME
+          value: /tmp/hf_home
+      image: 'quay.io/modh/vllm@sha256:0d55419f3d168fd80868a36ac89815dded9e063937a8409b7edf3529771383f3'
+      name: kserve-container
+      ports:
+        - containerPort: 8080
+          protocol: TCP
+      volumeMounts:
+        - mountPath: /dev/shm
+          name: shm
+        - mountPath: /eurollm
+          name: eurollm-model
+        - name: vllm-cache
+          mountPath: /home/vllm/.cache
+  multiModel: false
+  supportedModelFormats:
+    - autoSelect: true
+      name: vLLM
+  volumes:
+    - emptyDir:
+        medium: Memory
+        sizeLimit: 2Gi
+      name: shm
+    - persistentVolumeClaim:
+        claimName: eurollm-model
+        readOnly: false
+      name: eurollm-model
+    - name: vllm-cache
+      emptyDir: {}
+---
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  annotations:
+    openshift.io/display-name: eurollm
+    serving.knative.openshift.io/enablePassthrough: 'true'
+    serving.kserve.io/deploymentMode: RawDeployment
+    sidecar.istio.io/inject: 'true'
+    sidecar.istio.io/rewriteAppHTTPProbers: 'true'
+  name: eurollm
+  namespace: eurollm-eero
+  finalizers:
+    - inferenceservice.finalizers
+  labels:
+    networking.knative.dev/visibility: cluster-local
+    opendatahub.io/dashboard: 'true'
+spec:
+  predictor:
+    maxReplicas: 1
+    minReplicas: 1
+    model:
+      modelFormat:
+        name: vLLM
+      name: ''
+      resources:
+        limits:
+          cpu: '4'
+          memory: 20Gi
+          nvidia.com/gpu: '1'
+        requests:
+          cpu: '2'
+          memory: 16Gi
+          nvidia.com/gpu: '1'
+      runtime: eurollm
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: eurollm
+  namespace: eurollm-eero
+spec:
+  host: eurollm-eurollm.apps.aic.eu.arrow.lab
+  path: /
+  to:
+    name: eurollm-predictor
+    weight: 100
+    kind: Service
+  port:
+    targetPort: http
+  wildcardPolicy: None
+  alternateBackends: []
