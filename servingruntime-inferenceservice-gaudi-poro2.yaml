@@ -22,6 +22,11 @@ spec:
         - '--model=/poro'
         - '--served-model-name={{.Name}}'
         - '--tensor-parallel-size=2'
+        - '--enforce-eager'
+        - '--max-num-seqs 4'
+        - '--max-num-batched-tokens 2048'
+        - '--max-seq-len-to-capture 512'
+        - '--max-model-len 4096'
       command:
         - python
         - '-m'
