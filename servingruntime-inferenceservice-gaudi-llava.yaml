@@ -5,6 +5,9 @@ metadata:
     opendatahub.io/accelerator-name: ''
     opendatahub.io/apiProtocol: REST
     opendatahub.io/recommended-accelerators: '["habana.ai/gaudi"]'
+    #opendatahub.io/accelerator-name: nvidia-a100
+    #opendatahub.io/apiProtocol: REST
+    #opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
     opendatahub.io/template-display-name: vLLM ServingRuntime for KServe
     opendatahub.io/template-name: vllm-runtime
     openshift.io/display-name: llava
@@ -86,10 +89,12 @@ spec:
         limits:
           cpu: '4'
           memory: 20Gi
+          #nvidia.com/gpu: '2'
           habana.ai/gaudi: '1'
         requests:
           cpu: '2'
           memory: 16Gi
+          #nvidia.com/gpu: '2'
           habana.ai/gaudi: '1'
       runtime: llava
 ---
